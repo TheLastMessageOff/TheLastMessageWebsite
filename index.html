@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The Last Message</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .video-background {
+            position: fixed;
+            right: 0; 
+            bottom: 0;
+            min-width: 100%; 
+            min-height: 100%;
+        }
+        body {
+             overflow-x: hidden;
+            background-image: url(backroundimage.jpg);
+            
+             background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        color: #292929;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        
+        }
+        body {
+            
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)), url(backroundimage.jpg) no-repeat fixed;
+
+ width: 100vw;     /* largeur de l'écran */
+  height: 100vh;    /* hauteur de l'écran */
+             background-attachment: fixed; /* C'est ce qui crée l'effet de "fond fixe" */
+             
+                display: flex;
+                justify-content: center;
+            background-size: cover;
+            color: #ffffff;
+        }
+
+        header {
+            background-color: #333;
+             opacity: 10;
+            color: #fff;
+            padding: 20px;
+            padding-left: 30;
+            text-align: left;
+              position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; /* pour qu'il reste au-dessus du reste */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* ombre pour le style */
+    justify-content: space-between; /* Espace entre le haut et le bas */
+  height: 100vh;
+  width: 200px; /* ou ta largeur */
+
+
+            
+        }
+        nav {
+    background-color: #444;
+   
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+nav li {
+    float: left;
+}
+
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.fade-page {
+    animation: fadein 2s; /* 2 seconds duration */
+}
+.responsive-container {
+  width: 90%;
+  max-width: 1200px;
+  padding: 2vw;
+  box-sizing: border-box;
+}
+
+.responsive-container img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+        }
+        .social-links img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+            z-index: 9999;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Style de la vidéo */
+        .loader video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+              gap: 20px;
+        }
+
+        
+        .image-box img {
+            width: 100%;
+            height: 500px;
+            transition: transform 0.3s ease;
+            padding-top: 50px;
+             
+           
+        }
+       .horizontal-scroll img:hover {
+        transform: scale(1.05); /* Agrandit l'image de 10% lorsque la souris est dessus */
+        
+         }
+         .layer-1 {
+    z-index: 1;
+    opacity: 1;
+}
+
+.layer-2 {
+    z-index: 2;
+    opacity: 0.7; /* optionnel pour un effet visuel */
+}
+.horizontal-scroll {
+  display: flex;        /* Affiche les images sur la même ligne */
+  flex-wrap: wrap;      /* Permet de passer à la ligne si nécessaire */
+  gap: 40px;            /* Espace entre les images */
+  padding: 10px 0;
+}
+
+.horizontal-scroll img {
+  border-radius: 10px;
+  max-height: 250px;
+  height: auto;
+  width: auto;
+}
+
+
+
+.download-btn img {
+  transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.background-container {
+  position: relative;
+  width: 100%;
+  height: 500px; /* hauteur ajustable selon ton image */
+  background-image: url('ton_image.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Bouton repositionné */
+.download-btn {
+  position: absolute;
+  bottom: 15px; /* espace par rapport au bas */
+  right: 50px;  /* espace par rapport à la droite */
+  padding: 8px 14px; /* taille réduite */
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.download-btn:hover {
+  opacity: 1;
+}
+.download-btn img:hover {
+  transform: scale(1.1);
+}
+
+.background-blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('backroundimage.jpg') no-repeat center center;
+  background-size: cover;
+  filter: blur(10px);
+  z-index: -1; /* mettre en arrière-plan */
+}
+#toggle-nav {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1100;
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 4px;
+}
+
+/* Sidebar animée */
+#sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Quand masquée */
+#sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+.hero {
+  background-image: url('backroundimage.jpg');
+  background-size: cover;
+  height: 100vh; /* hauteur = 100% de la hauteur de l'écran */
+  width: 100%;
+}
+    </style>
+</head>
+<body>
+     <div class="background-blur"></div>
+     <button id="toggle-nav">☰</button>
+    <header id="sidebar">
+      
+        <img src="image (1) (5).png" sizes="20px" alt="Logo">
+
+        <h1>The Last Message <br><br></h1>
+
+            <div class="social-links">
+        <a href="https://www.youtube.com/channel/UCotS0ASIh1nVeiGNseJauqw" target="_blank">
+            <img src="youtube.png" alt="YouTube">
+            YouTube <br>
+        </a>
+        <a href="https://x.com/Hedy08248896340"  target="_blank">
+            <img src="twitter.png" alt="Twitter">
+            X <br>
+        </a>
+        <a href="https://www.tiktok.com/@thelastmessageoff"  target="_blank">
+            <img src="tiktok.png" alt="TikTok">
+            TikTok <br>
+        </a>
+        <a href="https://discord.gg/2dh8dFv7Dc"  target="_blank">
+            <img src="discord.png" alt="Discord">
+            Discord <br>
+        </a>
+                <a href="patreon.com/TheLastMessage"  target="_blank">
+            <img src="patreon-logo.png" alt="Discord">
+            patreon <br>
+        </a>
+    </div>
+            <ul>
+              <br><br><br>
+
+            <li><a href="index.html">Aperçu</a></li> <br>
+            <li><a href="news PAGE .html">News</a></li> <br>
+            <li><a href="gameplay page .html">Lore</a></li><br>
+            <li><a href="lore page .html">Guide</a></li> <br>
+            <li><a href="global page.html">References & Sources Page</a></li> <br>
+        </ul>
+    <br><br><br><br>
+     <p>© 2025 The Last Message. All rights reserved.</p>
+    
+    </header>
+    <div id="loading-screen">
+        <img src="backroundimage.jpg" alt="Loading...">
+    </div>
+    
+    <main>
+   <section id="overview">
+    <section class="hero">
+  <div class="overlay">
+        <h1>بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h1>
+    <h1>The Last Message</h1>
+    <p>A spiritual open-world RPG set in 7th century Mecca.</p>
+    <a href="https://thelastmessage.itch.io/thelastmessage" class="download-btn">
+      <img src="buttondownload.png" width="700" alt="download-btn">
+  </div>
+</section>
+
+<div class="horizontal-scroll">
+  <a href="Lore page .html">
+    <img src="Guide01.png" class="responsive-img" alt="Image 1">
+  </a>
+  <a href="gameplay page .html">
+    <img src="lore01.png" class="responsive-img" alt="Image 2">
+  </a>
+  <a href="news PAGE .html">
+    <img src="news01.png" class="responsive-img" alt="Image 3">
+  </a>
+  <a href="global page.html">
+    <img src="GlobalInformation.png" class="responsive-img" alt="Image 4">
+  </a>
+</div>
+    </main>
+
+
+<script>
+document.onreadystatechange = function () {
+    if (document.readyState === "complete") {
+        document.body.classList.add('fade-page');
+    }
+}
+window.addEventListener('load', function () {
+    const loadingScreen = document.getElementById('loading-screen');
+    loadingScreen.style.display = 'none';
+});
+document.getElementById("toggle-nav").addEventListener("click", function () {
+    document.getElementById("sidebar").classList.toggle("hidden");
+    });
+</script>
+</body>
+
+    
+    
+</body>
+</html>
