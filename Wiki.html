@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wiki — The Last Message</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{
+      --accent: #d4af37;
+      --card-radius: 16px;
+      --title-height: 72px;
+      --card-height: 360px;
+      --transition-duration: 420ms;
+      --easing: cubic-bezier(.16,.84,.24,1);
+      --lift: -8px;
+      --accent-strip: linear-gradient(180deg, rgba(212,175,55,1), rgba(212,175,55,0.75));
+      --glass: rgba(0,0,0,0.42);
+    }
+
+    /* base */
+    *{ box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    html,body{ height:100%; }
+    body{
+      background: linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.65)),
+        url('https://images.unsplash.com/photo-1542662565-7e4b66bae529?auto=format&fit=crop&w=2069&q=80') no-repeat center center fixed;
+      background-size:cover;
+      color:var(--accent);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:12px 18px 28px;
+      text-align:center;
+    }
+
+    .container{ width:100%; max-width:1200px; display:flex; flex-direction:column; gap:22px; align-items:center; }
+
+    .bismillah{ font-size:1.05rem; font-weight:600; opacity:.95; text-shadow:0 0 14px rgba(212, 175, 55, 0.707); }
+    .game-title{ font-size:3rem; letter-spacing:1px; text-shadow:1px 1px 6px rgba(0,0,0,.6); margin-top:4px; }
+    .page-title{ font-size:1.05rem; opacity:.95; margin-top:4px; text-shadow:1px 1px 2px rgba(0,0,0,.5); color:#f3e9c2; }
+
+    /* top nav (keeps original visual) */
+    .nav-buttons{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; width:100%; max-width:1120px; margin-top:12px; }
+    .nav-button{ display:flex; align-items:center; gap:10px; justify-content:center; height:48px; padding:10px 14px; background:rgba(0,0,0,0.35); border:1px solid rgba(212,175,55,0.08); border-radius:10px; text-decoration:none; color:inherit; box-shadow:0 0 8px #292828; transition:transform 220ms var(--easing), background 220ms var(--easing); font-weight:700; }
+    .nav-button i{ font-size:18px; width:26px; display:inline-flex; align-items:center; justify-content:center; color:inherit; }
+    .nav-button:hover{ transform:translateY(-3px); background: rgba(0,0,0,0.45); box-shadow:0 0 8px #d4af37; }
+
+    /* main content */
+    .wiki-wrap{ width:100%; grid-template-columns: 1fr 340px; gap:20px; max-width:1120px; }
+    @media (max-width:980px){ .wiki-wrap{ grid-template-columns:1fr; } .nav-buttons{ grid-template-columns:repeat(1,1fr); } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+      border:1px solid rgba(212,175,55,0.08);
+      border-radius:var(--card-radius);
+      padding:18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      color:#efe6c9;
+      text-align:left;
+    }
+
+    /* left column */
+    .section-title{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .section-title h2{ font-size:1.2rem; color:#fff; margin:0; }
+    .muted{ color:#f1e7c8; opacity:.9; font-size:.96rem; }
+
+    /* controls table */
+    table.controls{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+    table.controls th, table.controls td{
+      padding:12px 12px;
+      border-bottom:1px dashed rgba(212,175,55,0.08);
+      text-align:center;
+      font-size:.98rem;
+    }
+    table.controls th{ color:#fff; font-weight:700; background:rgba(0,0,0,0.18); border-radius:8px 8px 0 0; }
+    table.controls tr:hover td{ background:rgba(255,255,255,0.01); }
+
+    /* details/summary styling for sections */
+    details{
+      background: rgba(0,0,0,0.18);
+      border-radius:12px;
+      padding:10px;
+      margin-bottom:12px;
+      border:1px solid rgba(212,175,55,0.06);
+      transition:transform var(--transition-duration) var(--easing), box-shadow .2s ease;
+    }
+    details[open]{ transform:translateY(-6px); box-shadow:0 0 14px rgba(212,175,55,0.12); }
+    summary{
+      list-style:none;
+      cursor:pointer;
+      font-weight:700;
+      font-size:1rem;
+      outline:none;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    summary::-webkit-details-marker{ display:none; }
+
+    .summary-icon{
+      width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(212,175,55,0.06);
+      box-shadow:0 6px 14px rgba(0,0,0,0.45);
+    }
+
+    /* buttons */
+    .cta{ display:inline-flex; gap:8px; align-items:center; padding:10px 14px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border:1px solid rgba(212,175,55,0.08); text-decoration:none; color:inherit; font-weight:700; }
+    .cta i{ font-size:14px; }
+
+    footer{ width:100%; max-width:1200px; margin-top:18px; padding-top:16px; border-top:1px solid rgba(212,175,55,.12); color:var(--accent); text-align:center; font-size:.95rem; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+      <h1 class="game-title">The Last Message</h1>
+      <p class="page-title">Wiki</p>
+    </header>
+
+    <nav class="nav-buttons" aria-label="Main menu">
+      <a class="nav-button" href="Index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="nav-button" href="GlobalInformation.html"><i class="fa-solid fa-globe"></i><span>Global Information</span></a>
+      <a class="nav-button" href="Lore.html"><i class="fa-solid fa-scroll"></i><span>Lore</span></a>
+      <a class="nav-button" href="News.html"><i class="fa-solid fa-newspaper"></i><span>News</span></a>
+    </nav>
+
+    <div class="wiki-wrap">
+
+      <!-- LEFT: main wiki content -->
+      <div class="card" aria-live="polite">
+        <div class="section-title">
+          <div class="summary-icon"><i class="fa-solid fa-book"></i></div>
+          <h2>Game Controls — Quick Reference</h2>
+        </div>
+
+        <!-- Controls table -->
+        <table class="controls" aria-label="Game controls">
+          <thead>
+            <tr><th>Action</th><th>Key / Input</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Move Forward</td><td class="code">W</td></tr>
+            <tr><td>Move Backward</td><td class="code">S</td></tr>
+            <tr><td>Move Right</td><td class="code">D</td></tr>
+            <tr><td>Move Left</td><td class="code">A</td></tr>
+            <tr><td>Look (Camera)</td><td class="code">Mouse</td></tr>
+            <tr><td>Walk</td><td class="code">Left Ctrl</td></tr>
+            <tr><td>Jump</td><td class="code">Spacebar</td></tr>
+            <tr><td>Interact</td><td class="code">E</td></tr>
+            <tr><td>Strafe Mode</td><td class="code">Middle Mouse Button</td></tr>
+            <tr><td>Aim</td><td class="code">Right Mouse Button</td></tr>
+            <tr><td>Inventory</td><td class="code">B</td></tr>
+            <tr><td>Main Menu</td><td class="code">Escape</td></tr>
+            <tr><td>Quest Menu</td><td class="code">J</td></tr>
+            <tr><td>Show/hide mouse cursor</td><td class="code">Left Alt</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Beginner's Guide -->
+        <details open>
+          <summary><div class="summary-icon"><i class="fa-solid fa-book-open"></i></div>Beginner’s Guide</summary>
+          <div style="margin-top:12px;" class="muted">
+            <strong>1. Main Menu</strong>
+            <p style="margin:8px 0 0;">
+              When you launch the game, you’ll see four buttons:
+              <ul style="margin:8px 0 12px 18px; color:#efe5bf;">
+                <li><span class="code">Play</span> → Starts the introduction animation and launches the basic tutorial.</li>
+                <li><span class="code">Load</span> → Loads your saved game immediately (the game autosaves every 30 seconds).</li>
+                <li><span class="code">Options</span> → Opens the settings menu.</li>
+                <li><span class="code">Quit</span> → Closes the game.</li>
+              </ul>
+            </p>
+
+            <strong>2. Starting the Game &amp; Tutorial</strong>
+            <p style="margin:8px 0 0;">When you click <span class="code">Play</span>, you’ll watch the introduction animation and then begin your journey in the desert, on the road to Mecca. This is where the tutorial takes place.</p>
+
+            <div style="margin-top:10px;">
+              <strong>Tutorial Steps</strong>
+              <ol style="margin:8px 0 12px 18px; color:#efe5bf;">
+                <li>
+                  <strong>Follow the Yellow Marker</strong><br>
+                  Move toward the indicated point on the map.
+                </li>
+                <li>
+                  <strong>Open the Quest Journal</strong><br>
+                  Press <span class="code">J</span>. Select the Tutorial mission. Close the journal.
+                </li>
+                <li>
+                  <strong>Interact with the Lantern</strong><br>
+                  Approach the lantern. Hover your cursor over it. Press <span class="code">E</span>.
+                </li>
+                <li>
+                  <strong>Meet the Traveler</strong><br>
+                  Go to the marked traveler. Interact (E). Use the on-screen button to skip dialogues.
+                </li>
+                <li>
+                  <strong>Open a Chest</strong><br>
+                  After the dialogue, go to the chest and interact to receive a scroll. Press <span class="code">B</span> to open inventory. Close the scroll with the Close button.
+                </li>
+                <li>
+                  <strong>Rest in Your Tent</strong><br>
+                  Go to your tent and rest. The tutorial is now complete.
+                </li>
+              </ol>
+            </div>
+
+            <strong>3. Arrival in Mecca</strong>
+            <p style="margin:8px 0 0;">
+              You have now arrived in Mecca! From here, you can access the first main quest in the Quest Menu:
+              <em>Beginning of the Revelation</em>.
+            </p>
+            <p style="margin:8px 0 0;">
+              <strong>Quest Objectives:</strong>
+              <ul style="margin:8px 0 12px 18px; color:#efe5bf;">
+                <li>Arrive in Mecca and find your way around.</li>
+                <li>Explore the market and observe its bustling life.</li>
+                <li>Meet Zaid in the market.</li>
+                <li>Follow Zaid to his adoptive father’s house.</li>
+                <li>Meet Waraqa ibn Nawfal to learn more about the revelation.</li>
+                <li>Reflect on the events with Zaid.</li>
+              </ul>
+            </p>
+          </div>
+        </details>
+
+        <!-- Interactive Elements -->
+        <details>
+          <summary><div class="summary-icon"><i class="fa-solid fa-magic-wand-sparkles"></i></div>Tutorial: Interactive Elements</summary>
+          <div style="margin-top:12px;" class="muted">
+            <strong>Lanterns</strong>
+            <p style="margin:8px 0 0;">Description de l'image</p>
+            <ul style="margin:8px 0 12px 18px; color:#efe5bf;">
+              <li><strong>Small Lanterns</strong> → Found near houses, representing general residential areas in Mecca.</li>
+              <li><strong>Medium Lanterns</strong> → Mark water sources such as wells.</li>
+              <li><strong>Large Lanterns</strong> → Mark important monuments such as the Kaaba.</li>
+            </ul>
+            <p style="margin:6px 0 12px;">How they work:</p>
+            <ul style="margin-left:18px; color:#efe5bf;">
+              <li>When you approach a lantern, an information page opens, describing the location.</li>
+              <li>You can interact with the lantern to receive rewards.</li>
+              <li>All discovered location information is stored in your inventory and can be viewed anytime.</li>
+            </ul>
+
+            <hr style="border:none;border-top:1px dashed rgba(212,175,55,0.06);margin:12px 0;">
+
+            <strong>Scrolls</strong>
+            <p style="margin:8px 0 0;">Description de l'image</p>
+            <p style="margin:8px 0 0; color:#efe5bf;">
+              Scrolls come in three rarity levels. The two less rare types can be found scattered around the world. The rarest scrolls are obtained through special events.
+            </p>
+            <p style="margin:8px 0 0; color:#efe5bf;"><strong>Ways to obtain scrolls:</strong></p>
+            <ul style="margin:8px 0 12px 18px; color:#efe5bf;">
+              <li>Exploration and searching the world.</li>
+              <li>Progressing through the story.</li>
+              <li>Dialogues with NPCs.</li>
+              <li>Gifts or purchases from shops.</li>
+            </ul>
+            <p style="color:#efe5bf;"><strong>Extra Tip:</strong></p>
+            <ul style="margin:8px 0 12px 18px; color:#efe5bf;">
+              <li>By speaking to Ikrima, you can unlock a map showing the location of all scrolls.</li>
+              <li>Scrolls can be located outdoors or inside buildings. If inside, you will see small lights at the building’s entrance.</li>
+            </ul>
+            <p style="color:#efe5bf;"><strong>Unlockable Feature with Ikrima:</strong></p>
+            <ul style="margin:8px 0 12px 18px; color:#efe5bf;">
+              <li>After collecting enough scrolls, return to Ikrima to access his Scroll Shop, which contains 6 hadiths from The Forty Nawawi for 3 Hasanats per scroll.</li>
+              <li>You’ll also unlock a permanent event allowing you to obtain a random hadith from The Forty Nawawi in exchange for 1 Hasanat.</li>
+            </ul>
+
+            <hr style="border:none;border-top:1px dashed rgba(212,175,55,0.06);margin:12px 0;">
+
+            <strong>XP &amp; Currency</strong>
+            <p style="margin:8px 0 0;">Earning XP and Money: Description de l'image</p>
+            <p style="margin:8px 0 0; color:#efe5bf;">
+              You can gain XP and currency through missions, events, exploration, and more. Each time you level up, the amount of XP required for the next level doubles.
+            </p>
+
+            <p style="margin:8px 0 0; color:#efe5bf;"><strong>Currencies in the Game:</strong></p>
+            <ul style="margin:8px 0 12px 18px; color:#efe5bf;">
+              <li><strong>Baraqa (Common Currency)</strong> — Lower value currency. <span class="code">100 Baraqa = 1 Hasanat</span>. Used for basic purchases and minor progression.</li>
+              <li><strong>Hasanat (Rare Currency)</strong> — High-value currency. Used to purchase rare scrolls and other valuable items for progression.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- Player Tips -->
+        <details>
+          <summary><div class="summary-icon"><i class="fa-solid fa-lightbulb"></i></div>Player Tips &amp; Quick Commands</summary>
+          <div style="margin-top:12px;" class="muted">
+            <ul style="color:#efe5bf; margin-left:18px;">
+              <li><strong>Toggle Mouse Cursor:</strong> Press the <span class="code">Alt Gr</span> key to show or hide your mouse cursor.</li>
+              <li><strong>Quick Teleport:</strong> Open your map and click on the <span class="code">"Go City Center"</span> button to instantly teleport to the city center.</li>
+              <li><strong>Redeem Gift Codes:</strong> Go to <em>Settings &gt; General</em>, then enter your code in the designated field. Claim rewards in your mailbox after confirmation.</li>
+              <li><strong>Delete Save Data:</strong> If you need to start over, delete the save folder at:
+                <div class="code" style="display:inline-block; margin-left:6px;">C:\Users\YOUR_NAME\AppData\Local\GameAnimationSample</div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+    <footer>&copy; 2025 The Last Message. All rights reserved.</footer>
+  </div>
+
+  <script>
+    // minor enhancement: open/close animations are native; ensure summary accessible toggle icon indicator
+    document.querySelectorAll('details').forEach(d=>{
+      const s = d.querySelector('summary');
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-chevron-down';
+      icon.style.marginLeft = 'auto';
+      icon.style.opacity = '0.9';
+      icon.style.fontSize = '0.9rem';
+      s.appendChild(icon);
+      d.addEventListener('toggle', ()=>{
+        icon.className = d.open ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+      });
+    });
+  </script>
+</body>
+</html>

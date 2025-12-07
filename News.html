@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>News — The Last Message</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --accent: #d4af37;
+  --card-radius: 16px;
+  --transition-duration: 420ms;
+  --easing: cubic-bezier(.16,.84,.24,1);
+  --bg-overlay: rgba(0,0,0,.65);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+html,body{ height:100%; }
+body{
+  background:
+    linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+    url('https://images.unsplash.com/photo-1542662565-7e4b66bae529?auto=format&fit=crop&w=2069&q=80') no-repeat center center fixed;
+  background-size:cover;
+  color:var(--accent);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:12px 20px 24px;
+  text-align:center;
+}
+
+.container{ width:100%; max-width:1200px; display:flex; flex-direction:column; gap:22px; align-items:center; }
+
+.bismillah{ font-size:1.05rem; font-weight:600; opacity:.95; text-shadow:0 0 14px rgba(212, 175, 55, 0.707); }
+.game-title{ font-size:3rem; letter-spacing:1px; text-shadow:1px 1px 6px rgba(0,0,0,.6); margin-top:4px; }
+.page-title{ font-size:1.05rem; opacity:.95; margin-top:4px; text-shadow:1px 1px 2px rgba(0,0,0,.5); color:#f3e9c2; }
+
+.nav-buttons{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  width:100%;
+  max-width:1120px;
+}
+.nav-button{
+  display:flex; align-items:center; gap:8px; justify-content:center;
+  height:48px; padding:10px 14px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(212,175,55,0.08);
+  border-radius:10px;
+  text-decoration:none;
+  color:inherit;
+  box-shadow:0 0 8px #292828;
+  transition:transform 220ms var(--easing), background 220ms var(--easing), box-shadow .2s ease;
+  font-weight:700;
+}
+.nav-button i{ font-size:18px; width:26px; display:inline-flex; align-items:center; justify-content:center; color:inherit; }
+.nav-button:hover{ 
+  transform:translateY(-3px);
+  background: rgba(0,0,0,0.42);
+  box-shadow:0 0 8px #d4af37; 
+}
+
+.card{
+  width:100%;
+  background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.42));
+  border-radius: var(--card-radius);
+  border:1px solid rgba(212,175,55,0.06);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  padding:22px;
+  color:#efe6c8;
+  backdrop-filter: blur(4px);
+}
+
+.devlog-top{ display:flex; gap:18px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px; }
+.devlog-title{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; color:#efe5bf; }
+.devlog-title h2{ font-size:1.6rem; margin:0; color:#fff; text-shadow:0 6px 16px rgba(0,0,0,.6); }
+.devlog-title p{ margin:0; opacity:.95; color:#efe5bf; }
+
+.controls{ display:flex; gap:8px; align-items:center; }
+.ctrl-btn{
+  background:rgba(0,0,0,0.35); border:1px solid rgba(212,175,55,0.06); color:inherit;
+  padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:700;
+  box-shadow:0 6px 12px rgba(0,0,0,.35); transition:transform 180ms var(--easing);
+}
+.ctrl-btn:hover{ transform:translateY(-4px); box-shadow:0 0 10px #d4af37; }
+
+.search{ display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.16); padding:8px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.04); }
+.search input{ background:transparent; border:0; outline:0; color:var(--accent); width:220px; font-weight:600; }
+
+.version-list{ display:flex; flex-direction:column; gap:12px; margin-top:6px; text-align:left; }
+.version{
+  border-radius:12px; overflow:hidden; border:1px solid rgba(212,175,55,0.06);
+  background:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.24));
+  transition:transform var(--transition-duration) var(--easing), box-shadow .2s ease;
+}
+.version[open]{ transform:translateY(-6px); box-shadow:0 0 18px rgba(212,175,55,0.12); }
+
+.version > summary{
+  list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:14px 18px; user-select:none;
+}
+.version > summary::-webkit-details-marker{ display:none; }
+.version-header{ display:flex; align-items:center; gap:12px; }
+.version-badge{
+  min-width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
+  border:1px solid rgba(212,175,55,0.08); font-weight:800; box-shadow:0 6px 12px rgba(0,0,0,.35);
+}
+.version-meta{ display:flex; flex-direction:column; gap:2px; color:#efe5bf; }
+.version-meta b{ font-size:1rem; color:#fff; }
+.version-meta span{ font-size:0.85rem; opacity:0.95; color:#e9dbb2; }
+
+.chev{ font-size:20px; color:var(--accent); transform:rotate(0deg); transition:transform var(--transition-duration) var(--easing); }
+.version[open] .chev{ transform:rotate(180deg); }
+
+.version-content{ padding:12px 18px 18px 18px; border-top:1px solid rgba(212,175,55,0.03); background:linear-gradient(180deg, rgba(0,0,0,0.02), transparent); color:#efe6c8; }
+.items{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px 16px; }
+@media (max-width:900px){ .items{ grid-template-columns:repeat(1,1fr); } }
+
+.item{ display:flex; gap:12px; align-items:flex-start; padding:8px; border-radius:10px; background:rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.18); }
+.item i{ min-width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--accent); margin-top:3px; }
+.item p{ margin:0; color:#efe6c8; font-weight:600; line-height:1.2; }
+
+.devlog-intro{ margin:10px 0 6px; color:#efe5bf; line-height:1.45; font-size:1rem; text-align:left; padding:0 6px; }
+
+footer{ width:100%; max-width:1200px; margin-top:10px; padding-top:18px; border-top:1px solid rgba(212,175,55,.08); color:var(--accent); text-align:center; font-size:.95rem; }
+
+.small{ font-size:0.86rem; opacity:0.95; color:#e9dbb2; }
+.badge-done{ color:#0fd48f; font-weight:800; }
+.badge-wip{ color:#ffd36b; font-weight:800; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+      <h1 class="game-title">The Last Message</h1>
+      <p class="page-title">News</p>
+    </header>
+
+    <nav class="nav-buttons" aria-label="Main menu">
+      <a class="nav-button" href="Index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="nav-button" href="GlobalInformation.html"><i class="fa-solid fa-globe"></i><span>Global Information</span></a>
+      <a class="nav-button" href="Soon.html"><i class="fa-solid fa-book"></i><span>Wiki</span></a>
+      <a class="nav-button" href="Lore.html"><i class="fa-solid fa-scroll"></i><span>Lore</span></a>
+    </nav>
+
+    <main class="card" role="main" aria-labelledby="devlog-heading">
+      <div class="devlog-top">
+        <div class="devlog-title">
+          <h2 id="devlog-heading">📜 Devlog — Current State of the Project</h2>
+          <p class="small">Short, direct, and honest. Click a version to see its items.</p>
+        </div>
+
+        <div class="controls" aria-hidden="false">
+          <div class="search" title="Search tasks">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="search" placeholder="Search (e.g.: Dialogue, Map, Cutscene)" />
+          </div>
+          <button class="ctrl-btn" id="expandAll"><i class="fa-solid fa-angle-down"></i> Expand all</button>
+          <button class="ctrl-btn" id="collapseAll"><i class="fa-solid fa-angle-up"></i> Collapse all</button>
+        </div>
+      </div>
+
+      <div class="devlog-intro">
+        <p>In the name of Allah, the Most Merciful, the Most Compassionate. May peace and blessings be upon our beloved Prophet Muhammad ﷺ, the perfect example for all humanity. May this project, in all humility and respect, reflect a portion of his noble message.</p>
+      </div>
+
+      <section class="version-list" id="versions">
+
+        <details class="version" data-version="0.01" open>
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.01</div>
+              <div class="version-meta">
+                <b>Version 0.01 — Gameplay Foundations</b>
+                <span class="small">Core gameplay systems: movement, inventory, dialogue, etc.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Character Locomotion</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Currency System (Baraka & Hassanat)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>XP and Leveling System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Interaction System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Reward System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Inventory System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Quest System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Quest Objectives</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Dialogue System</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.02">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.02</div>
+              <div class="version-meta">
+                <b>Version 0.02 — World Building Begins</b>
+                <span class="small">Map work, key locations, and first interactives.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Research for Mecca references and maps</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Initial map creation</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Building the Kaaba</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Creating the city center</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Interactive Lantern System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Adding lanterns to homes with descriptions</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Adding wells to the map</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Building Jabal An-Nur</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>First cutscene</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.03">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.03</div>
+              <div class="version-meta">
+                <b>Version 0.03 — Menus & Interfaces</b>
+                <span class="small">HUD, menus, first NPCs and market.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Creating the surrounding mountains of Mecca</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Creating the HUD</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Main Menu</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>In-game Menu</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Shop Menu</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Event Menu</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Settings Menu (Language, Audio, Graphics)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Improved Dialogue System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Scroll System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>First NPC</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Hazwara Market</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Lanterns for Monuments</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.04">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.04</div>
+              <div class="version-meta">
+                <b>Version 0.04 — Advanced Systems</b>
+                <span class="small">Reworks: save, clothing, maps, etc.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Quest System Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Dialogue System Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Save System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Load System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Clothing for NPCs and Main Character</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Mini Map</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>World Map</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Scroll Purchasing System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Scroll Categories</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Cursor Display</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.05">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.05</div>
+              <div class="version-meta">
+                <b>Version 0.05 — First Main Quest</b>
+                <span class="small">Main quest start: dialogues, interiors, cutscenes.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Start of First Main Quest (Initial ideas and testing)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Finalizing the Dialogue System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Map Expansion</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Interior of Dar Nadwa</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>House Interiors</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Adding Scrolls to the Map</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Adding Hadiths in Scrolls</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Cutscenes with monument interactions (Kaaba, Zamzam, Maqam Ibrahim, Dar Nadwa, Bani Shayba Gate)</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.06">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.06</div>
+              <div class="version-meta">
+                <b>Version 0.06 — Tutorial & NPCs</b>
+                <span class="small">Tutorial, NPCs, notifications and animations.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Quest System Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Save System Finalization</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Mass NPC Integration</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>NPC Animations</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>NPC Dialogues</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Pop-up Notifications (XP, Money, Items)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Beginning Tutorial in the Desert</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.07">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.07</div>
+              <div class="version-meta">
+                <b>Version 0.07 — Libraries</b>
+                <span class="small">Grand library, gacha, rare scrolls, Q&A.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Map: Grand Library</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Random Spawn System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Random Scrolls in the Library</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Gacha System for Scrolls</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Settings from Main Menu</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Scroll Rarity System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Sage’s Small Library</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Multiple Choice Question System (Q&A)</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.08">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.08</div>
+              <div class="version-meta">
+                <b>Version 0.08 — Events & Gameplay</b>
+                <span class="small">Events, parkour, races and interactions.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Hazwara Market Improvements</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>NPCs with dialogues (Old Man, Poor Man…)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Shop Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Menu Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Teleportation and Map System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Pressure Plates to Open Chests</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Bouncing Plates</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Moving Plates</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Parkour Event</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Safa to Marwa Race</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Hassanat Coin Collection</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Keybind Adjustments</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.09">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.09</div>
+              <div class="version-meta">
+                <b>Version 0.09 — First Major Mission</b>
+                <span class="small">Arrival animations, dialogues, waypoint system.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Arrival Animation in Mecca</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Arrival Animation at Hazwara Market</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Zaid NPC</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>First Dialogue with Zaid in the Market</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Waypoint System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Dialogue at Khadija’s House</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Dialogue with Waraqa</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Final Dialogue with Zaid (End of First Mission)</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.10">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.10</div>
+              <div class="version-meta">
+                <b>Version 0.10 — Atmosphere & Feedback</b>
+                <span class="small">Lighting, sounds, day-night cycle, optimization.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Scroll Category Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Lighting Rework across the Map</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>First Cutscene Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Loading Screen System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Day-Night Cycle</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Save Locations</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Ambient Sounds</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Scroll Detector System</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.11">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.11</div>
+              <div class="version-meta">
+                <b>Version 0.11 — Main Quest + Voices</b>
+                <span class="small">Main quest polish and voice acting.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Main Quest Animation Rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Dialogue Rework with Zaid (Market)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Dialogue Rework at the Prophet’s House</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Dialogue Rework with Waraqa</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Voice Acting for Zaid</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Voice Acting for Waraqa</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="version" data-version="0.12">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.12</div>
+              <div class="version-meta">
+                <b>Version 0.12 — little Touches & Polish</b>
+                <span class="small">Effects, optimization and rewards.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Tutorials for Each Event</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Level Rewards</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>XP and Money Reward Balancing</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Rare Scrolls in the Map</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Achievement System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Exploration Tracking System</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>City Center Teleport Button</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>FPS Display</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Pressure Plate Tutorial</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Rework of All Tutorial Widgets</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Loading Screen Images</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Visual Effects on Scroll and Lantern Interactions</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Light Optimization</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>LOD Optimization</p></div>
+            </div>
+          </div>
+        </details>
+
+           <details class="version" data-version="0.13">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.13</div>
+              <div class="version-meta">
+                <b>Version 0.13 — Final Touches & Polish</b>
+                <span class="small">Effects, optimization and rewards.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+            </div>
+          </div>
+        </details>
+
+          <details class="version" data-version="0.14">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.14</div>
+              <div class="version-meta">
+                <b>Version 0.14 —  First animation — done!</b>
+                <span class="small">animation, optimization voice & Sound Design .</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Creating the intro cinematic</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Added voices for some dialogues. </p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Added LODs to several models</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Optimized lights and global illumination</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Implemented a map system divided into several sections</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>New loading screens</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Several small improvements and fixes here and there</p></div>
+            </div>
+          </div>
+        </details>
+
+                  <details class="version" data-version="0.14">
+          <summary>
+            <div class="version-header">
+              <div class="version-badge">0.15</div>
+              <div class="version-meta">
+                <b>Version 0.15 —  Rework</b>
+                <span class="small">Rework after all you reviews from the gameplay video.</span>
+              </div>
+            </div>
+            <i class="chev fa-solid fa-chevron-down"></i>
+          </summary>
+          <div class="version-content">
+            <div class="items">
+              <div class="item"><i class="fa-regular fa-square"></i><p>Menus & UI total rework</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Optimization (better performance for low-end devices)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Fixing NPC legs</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>More NPC types & diversity</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>More animals</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>A camel animation when teleporting with the traveler</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>A menu showing everything you’ve unlocked/found</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Changing the text font</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Developing the story of the Prophet</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Adding Arabic voice acting</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Reworking the day/night system (brighter & warmer during the day, more colorful at night)</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>Fixing spelling mistakes</p></div>
+              <div class="item"><i class="fa-regular fa-square"></i><p>More cutscenes and audio, less text</p></div>
+            </div>
+          </div>
+        </details>
+
+      </section>
+
+      <div style="margin-top:12px; text-align:left; color:#efe5bf;">
+        <p><strong>🤍 Thank You</strong><br>
+        A sincere thank you to everyone who has tested, given feedback, or followed the project. Your support makes this game better. May Allah ﷻ reward you for your kindness and encouragement.</p>
+      </div>
+
+    </main>
+
+    <footer>
+      &copy; 2025 The Last Message. All rights reserved.
+    </footer>
+  </div>
+
+<script>
+document.getElementById('expandAll').addEventListener('click', () => {
+  document.querySelectorAll('.version').forEach(d => d.open = true);
+});
+document.getElementById('collapseAll').addEventListener('click', () => {
+  document.querySelectorAll('.version').forEach(d => d.open = false);
+});
+
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  document.querySelectorAll('.version').forEach(v => {
+    const text = v.textContent.toLowerCase();
+    v.style.display = q ? (text.includes(q) ? '' : 'none') : '';
+  });
+});
+</script>
+</body>
+</html>

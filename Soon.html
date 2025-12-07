@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Global Information - The Last Message</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --accent: #d4af37;
+  --card-radius: 16px;
+  --title-height: 72px;
+  --card-height: 360px;
+  --transition-duration: 520ms;
+  --easing: cubic-bezier(.16,.84,.24,1);
+  --lift: -8px;
+  --accent-strip: linear-gradient(180deg, rgba(212,175,55,1), rgba(212,175,55,0.75));
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+html,body{ height:100%; }
+body{
+  background:
+    linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.65)),
+    url('https://images.unsplash.com/photo-1542662565-7e4b66bae529?auto=format&fit=crop&w=2069&q=80') no-repeat center center fixed;
+  background-size:cover;
+  color:var(--accent);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:8px 20px 20px;
+  text-align:center;
+}
+
+.container{ width:100%; max-width:1200px; display:flex; flex-direction:column; gap:22px; align-items:center; }
+
+.bismillah{ font-size:1.05rem; font-weight:600; opacity:.95; text-shadow:0 0 14px rgba(212, 175, 55, 0.707); }
+.game-title{ font-size:3rem; letter-spacing:1px; text-shadow:1px 1px 6px rgba(0,0,0,.6); margin-top:4px; }
+.page-title{ font-size:1.05rem; opacity:.95; margin-top:4px; text-shadow:1px 1px 2px rgba(0,0,0,.5); color:#f3e9c2; }
+
+.nav-buttons{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  width:100%;
+  max-width:1120px;
+}
+.nav-button{
+  display:flex; align-items:center; gap:8px; justify-content:center;
+  height:48px; padding:10px 14px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(212,175,55,0.08);
+  border-radius:10px;
+  text-decoration:none;
+  color:inherit;
+  box-shadow:0 0 8px #292828;
+  transition:transform 220ms var(--easing), background 220ms var(--easing), box-shadow .2s ease;
+  font-weight:700;
+}
+.nav-button i{ font-size:18px; width:26px; display:inline-flex; align-items:center; justify-content:center; color:inherit; }
+.nav-button:hover{
+    transform:translateY(-3px);
+    background: rgba(0,0,0,0.42);
+    box-shadow: 0 0 8px #d4af37;
+}
+
+.content{
+  width:100%;
+  max-width:1100px;
+  display:flex;
+  gap:22px;
+  align-items:flex-start;
+  position:relative;
+}
+
+.col{
+  flex:1 1 0;
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+}
+
+.info-card{
+  position:relative;
+  padding-top: 11.5px;
+  padding-bottom: 11.5px;
+  padding-left: 18px;
+  padding-right: 18px;
+  border-radius:var(--card-radius);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
+  color:var(--accent);
+  overflow:hidden;
+  transition:
+    transform 360ms var(--easing),
+    box-shadow 360ms var(--easing),
+    max-height var(--transition-duration) var(--easing),
+    padding 220ms var(--easing);
+  max-height: var(--title-height);
+  cursor:pointer;
+  outline: none;
+  border: none;
+}
+
+.info-card::before{
+  content:"";
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:8px;
+  background: var(--accent-strip);
+  border-radius: 8px 0 0 8px;
+  transform: translateX(-6px);
+  opacity:0.95;
+  box-shadow: 0 6px 18px rgba(212,175,55,0.06);
+}
+
+.info-card:hover,
+.info-card:focus,
+.info-card.expanded{
+  transform: translateY(var(--lift));
+  box-shadow: 0 18px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.02);
+  max-height: var(--card-height);
+}
+
+.card-title{
+  display:flex;
+  align-items:left;
+  gap:12px;
+  height: var(--title-height);
+  flex-shrink:0;
+  text-align:left;
+  justify-content:left;
+}
+
+.card-title .icon{
+  width:48px; height:48px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+  box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+  font-size:22px;
+  flex-shrink:0;
+}
+
+.card-title .titles{
+  display:flex; flex-direction:column; gap:2px; line-height:1;
+  align-items:left;
+}
+.info-card.expanded .card-title .titles,
+.info-card:focus .card-title .titles,
+.info-card:hover .card-title .titles {
+  align-items:flex-start;
+}
+
+.card-title .titles .main{ font-size:1.05rem; font-weight:700; letter-spacing:0.2px; text-shadow: 0 1px 1px rgba(0,0,0,0.5); }
+.card-title .titles .sub{ font-size:0.82rem; opacity:0.75; margin-top:4px; }
+
+.card-content{
+  margin-top:12px;
+  line-height:1.6;
+  opacity:0;
+  transform: translateY(10px);
+  transition: opacity calc(var(--transition-duration) * .65) var(--easing), transform calc(var(--transition-duration) * .65) var(--easing);
+  will-change: opacity, transform;
+  pointer-events: none;
+  max-height: calc(var(--card-height) - var(--title-height) - 36px);
+  overflow:auto;
+  padding-right:6px;
+}
+
+.info-card.expanded .card-content,
+.info-card:hover .card-content,
+.info-card:focus .card-content {
+  opacity:1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.card-content ul{ list-style:none; padding-left:0; margin:0; }
+.card-content li{ margin-bottom:10px; padding-left:28px; position:relative; color:#f0e9c8; }
+.card-content li:before{ content:""; position:absolute; left:8px; top:8px; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 2px 6px rgba(212,175,55,0.14); }
+
+.social-links{ display:flex; gap:14px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:8px; }
+.social-button{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:46px; height:46px; border-radius:12px;
+  background: rgba(255,255,255,0.015); color:inherit; text-decoration:none;
+  border:1px solid rgba(212,175,55,0.06);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.45);
+  transition:transform 220ms var(--easing), background 220ms var(--easing), box-shadow .2s ease;
+  padding:0;
+}
+.social-button i{ display:flex; align-items:center; justify-content:center; font-size:18px; width:100%; height:100%; line-height:1; }
+.social-button:hover{
+    transform:translateY(-4px);
+    background: rgba(255,255,255,0.02);
+    box-shadow: 0 0 8px #d4af37;
+}
+
+.download-wrap{ width:100%; display:flex; justify-content:center; margin-top:8px; }
+.download-button{
+  display:inline-flex; align-items:center; gap:12px; padding:12px 26px; border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
+  border:1px solid rgba(212,175,55,0.08);
+  color:inherit; text-decoration:none; font-weight:700;
+  box-shadow:0 8px 20px rgba(0,0,0,.5); transition:transform 220ms var(--easing), box-shadow .2s ease;
+}
+.download-button:hover{
+    transform:translateY(-6px);
+    box-shadow: 0 0 8px #d4af37;
+}
+
+footer{ width:100%; max-width:1200px; margin-top:28px; padding-top:18px; border-top:1px solid rgba(212,175,55,.12); color:var(--accent); text-align:center; font-size:.95rem; }
+
+@media (max-width:900px){
+  .content{ flex-direction:column; }
+  .col{ width:100%; }
+  .nav-buttons{ grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:480px){
+  .game-title{ font-size:2.4rem; }
+  :root{ --card-height: 420px; --title-height: 78px; }
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+      <h1 class="game-title">The Last Message</h1>
+      <p class="page-title">Global Information</p>
+    </header>
+
+    <nav class="nav-buttons" aria-label="Main menu">
+      <a class="nav-button" href="Index.html">
+        <i class="fa-solid fa-house"></i><span>Home</span>
+      </a>
+      <a class="nav-button" href="GlobalInformation.html">
+<i class="fa-solid fa-globe"></i><span>Global Information</span>
+      </a>
+      <a class="nav-button" href="Lore.html">
+        <i class="fa-solid fa-scroll"></i><span>Lore</span>
+      </a>
+      <a class="nav-button" href="News.html">
+        <i class="fa-solid fa-newspaper"></i><span>News</span>
+      </a>
+    </nav>
+
+    <main class="content" role="main" id="cardsContainer">
+      <div class="col">
+        <section class="info-card" tabindex="0" aria-expanded="false">
+          <div class="card-title">
+            <div class="icon">📖</div>
+            <div class="titles">
+              <div class="main">Wiki and Guide</div>
+              <div class="sub">Soon</div>
+            </div>
+          </div>
+          <div class="card-content">
+          </div>
+        </section>
+
+       
+
+    <div class="social-links" aria-label="Social links">
+      <a class="social-button" href="https://www.tiktok.com/@thelastmessageofficial" target="_blank" rel="noopener">
+        <i class="fab fa-tiktok"></i>
+      </a>
+      <a class="social-button" href="https://www.youtube.com/channel/UCotS0ASIh1nVeiGNseJauqw" target="_blank" rel="noopener">
+        <i class="fab fa-youtube"></i>
+      </a>
+      <a class="social-button" href="https://discord.com/invite/2dh8dFv7Dc" target="_blank" rel="noopener">
+        <i class="fab fa-discord"></i>
+      </a>
+      <a class="social-button" href="https://www.patreon.com/TheLastMessage" target="_blank" rel="noopener">
+        <i class="fab fa-patreon"></i>
+      </a>
+    </div>
+
+    <div class="download-wrap">
+      <a class="download-button" href="https://ko-fi.com/thelastmessage">
+        <i class="fa-solid fa-download"></i><span>Donate</span>
+      </a>
+    </div>
+
+    <footer>
+      &copy; 2025 The Last Message. All rights reserved.
+    </footer>
+  </div>
+
+<script>
+(function(){
+  const cards = Array.from(document.querySelectorAll('.info-card'));
+
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      const was = card.classList.contains('expanded');
+      cards.forEach(c => {
+        c.classList.remove('expanded');
+        c.setAttribute('aria-expanded', 'false');
+      });
+      if (!was){
+        card.classList.add('expanded');
+        card.setAttribute('aria-expanded', 'true');
+        card.focus();
+      }
+    });
+
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+      if (e.key === 'Escape') {
+        cards.forEach(c => {
+          c.classList.remove('expanded');
+          c.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.info-card')) {
+      cards.forEach(c => {
+        c.classList.remove('expanded');
+        c.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>
